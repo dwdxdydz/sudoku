@@ -30,6 +30,10 @@ def get_hint(sudoku_board, final_board):
 
 def generate_window(sudoku_board, initial_board, final_board):
     global input_mode, puzzle_solved, empty_cells
+    input_mode = False
+    puzzle_solved = False
+    empty_cells = [(row, col) for row in range(9) for col in range(9)
+                   if initial_board[row][col] == 0]
     pygame.init()
     win = pygame.display.set_mode((width, width+100))
     pygame.display.set_caption("Game")
@@ -88,7 +92,8 @@ def generate_window(sudoku_board, initial_board, final_board):
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     row = (mouse_y - 75) // 75
                     col = (mouse_x - 75) // 75
-                    sudoku_board[row][col] = int(pygame.key.name(event.key))
+                    if 0 <= row < 9 and 0 <= col < 9:
+                        sudoku_board[row][col] = int(pygame.key.name(event.key))
                     input_mode = False  # Disable input mode
 
         # Check if the board is filled and correct
@@ -98,10 +103,5 @@ def generate_window(sudoku_board, initial_board, final_board):
             text = font.render("Sudoku Solved!", True, (0, 128, 0))
             win.blit(text, (width // 2 - text.get_width() // 2, width + 20))
             puzzle_solved = True
-
-        for i in range(9):
-            for j in range(9):
-                if sudoku_board[i][j] == 0:
-                    empty_cells.append((i, j))
 
         pygame.display.update()

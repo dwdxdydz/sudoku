@@ -4,7 +4,10 @@ import numpy as np
 
 
 def validate_board(board) -> np.ndarray:
-    board = np.asarray(board, dtype=int)
+    raw_board = np.asarray(board)
+    if not np.issubdtype(raw_board.dtype, np.integer):
+        raise ValueError("Sudoku values must be integers")
+    board = raw_board.astype(int, copy=False)
     if board.shape != (9, 9):
         raise ValueError("Sudoku board must be a 9x9 matrix")
     if np.any((board < 0) | (board > 9)):
@@ -12,8 +15,26 @@ def validate_board(board) -> np.ndarray:
     return board
 
 
+def _is_consistent(board: np.ndarray) -> bool:
+    """Return whether all given values obey Sudoku's row, column, and box rules."""
+    for index in range(9):
+        row = board[index, :]
+        col = board[:, index]
+        if len(row[row > 0]) != len(set(row[row > 0])):
+            return False
+        if len(col[col > 0]) != len(set(col[col > 0])):
+            return False
+    for row in range(0, 9, 3):
+        for col in range(0, 9, 3):
+            block = board[row:row + 3, col:col + 3].flat
+            values = [value for value in block if value > 0]
+            if len(values) != len(set(values)):
+                return False
+    return True
+
+
 def pos_checker(x, y, num, board):
-    validate_board(board)
+    board = validate_board(board)
     if not 1 <= num <= 9:
         return False
     block = board[x // 3 * 3:x // 3 * 3 + 3, y // 3 * 3:y // 3 * 3 + 3]
@@ -28,7 +49,9 @@ def _candidates(row, col, board):
 
 def full_solve(board):
     """Solve in place. Returns True when a valid solution exists."""
-    validate_board(board)
+    board = validate_board(board)
+    if not _is_consistent(board):
+        return False
     best = None
     best_candidates = None
     for row in range(9):
