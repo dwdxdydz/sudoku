@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from utils.solver import full_solve, pos_checker, validate_board
+from utils.key_generator import gen
 
 PUZZLE = np.array([
     [5, 3, 0, 0, 7, 0, 0, 0, 0],
@@ -33,3 +34,21 @@ def test_invalid_shape_rejected():
 def test_position_checker():
     assert not pos_checker(0, 2, 5, PUZZLE)
     assert pos_checker(0, 2, 4, PUZZLE)
+
+
+def test_solver_rejects_inconsistent_completed_board():
+    board = np.tile(np.arange(1, 10), (9, 1))
+    assert not full_solve(board)
+
+
+def test_generator_accepts_documented_lowercase_difficulties():
+    board = np.array(gen("medium"))
+    assert board.shape == (9, 9)
+    assert np.count_nonzero(board == 0) == 45
+    solution = board.copy()
+    assert full_solve(solution)
+
+
+def test_generator_rejects_unknown_difficulty():
+    with pytest.raises(ValueError, match="Difficulty"):
+        gen("expert")
