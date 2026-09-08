@@ -1,41 +1,35 @@
 # Sudoku Generator & Solver
 
-A Python Sudoku application that generates boards by difficulty, solves them with recursive backtracking, and renders the puzzle through a desktop UI.
-
-## Highlights
-
-- Difficulty-aware puzzle generation
-- Recursive backtracking solver
-- Separate board, generation, and solving modules
-- Command-line difficulty selection
-- NumPy-backed board representation
+A Python Sudoku project with puzzle generation, validation, an MRV-optimized backtracking solver, automated tests, and an optional Streamlit interface.
 
 ## Run
 
+CLI generation:
+
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python main.py --difficulty Hard
+python main.py --difficulty medium
 ```
 
-Supported difficulty names are defined by the generator in `utils/key_generator.py`.
+Interactive UI:
 
-## Architecture
-
-```text
-main.py
-  ├── key_generator.py   → puzzle generation
-  ├── solver.py          → constraint checking + backtracking
-  └── board_generator.py → desktop board UI
+```bash
+streamlit run app.py
 ```
 
-## Tech Stack
+Tests:
 
-**Python · NumPy · Algorithm Design · Backtracking · Tkinter/OpenCV-style UI components**
+```bash
+pytest -q
+```
 
-## Resume Description
+## Solver
 
-**Sudoku Generator & Solver | Python, NumPy, Backtracking**
+The solver chooses the empty cell with the fewest legal candidates (Minimum Remaining Values / MRV) before backtracking. This reduces unnecessary branching compared with scanning every empty cell in fixed order.
 
-Developed a modular Sudoku engine that generates difficulty-based puzzles and solves them using recursive backtracking with row, column, and 3×3 sub-grid constraint validation. Separated puzzle generation, solving, and presentation logic to keep the codebase maintainable and reusable.
+## Portfolio highlights
+
+- Constraint-solving and recursion
+- NumPy-based board validation
+- Heuristic search
+- Test-driven correctness checks
+- Simple user-facing UI
