@@ -2,62 +2,46 @@
 
 ## What is this project?
 
-This is a Python application that can **create Sudoku puzzles and solve them automatically**.
+This is a Python Sudoku application that can **create Sudoku puzzles and solve them automatically**.
 
-You can generate a puzzle, check whether a Sudoku board is valid, and let the program find the solution.
-
-It also includes an optional web interface so the project can be used more like a small application instead of only from the terminal.
+You can use the project from the command line or open the optional Streamlit interface.
 
 ## How does it work?
 
+A Sudoku board has empty cells that need to be filled while following Sudoku's rules: each number must appear only once in its row, column and 3×3 box.
+
+The solver works like this:
+
 ```text
-Create Sudoku puzzle
-        ↓
-Check the board
-        ↓
+Sudoku puzzle
+     ↓
 Find an empty cell
-        ↓
-Find numbers that can legally go there
-        ↓
-Choose the cell with the fewest choices
-        ↓
-Try a number
-        ↓
+     ↓
+Find numbers that are allowed there
+     ↓
+Choose the most restricted empty cell
+     ↓
+Try a possible number
+     ↓
 Does it lead to a solution?
-   ↙              ↘
- Yes               No
-  ↓                 ↓
-Continue       Try another number
-        ↓
-Solved Sudoku
+   ↓          ↓
+  Yes         No
+   ↓          ↓
+Continue   Try another number
+     ↓
+Solved board
 ```
 
-## How does the solver know what number to use?
+## Main features
 
-The program follows the normal Sudoku rules:
-
-- Every row must contain the numbers 1–9 without repetition.
-- Every column must contain the numbers 1–9 without repetition.
-- Every 3×3 box must contain the numbers 1–9 without repetition.
-
-When there is more than one possible empty cell, the solver chooses the cell with the **fewest possible numbers** first.
-
-This is called the **Minimum Remaining Values (MRV)** strategy. In simple terms, it means:
-
-> Solve the hardest-looking empty cell first.
-
-If a choice eventually makes the puzzle impossible, the program goes back and tries another choice. This is called **backtracking**.
-
-## What can it do?
-
-- Generate Sudoku puzzles.
-- Support different difficulty levels.
-- Check whether a board is valid.
-- Automatically solve puzzles.
-- Use MRV to reduce unnecessary trial and error.
-- Run from the command line.
-- Provide an optional Streamlit web interface.
-- Run automated tests.
+- Generates Sudoku puzzles
+- Validates boards and moves
+- Solves puzzles automatically
+- Uses an **MRV (Minimum Remaining Values)** strategy to choose cells intelligently
+- Uses recursive **backtracking** when a choice leads to a dead end
+- Command-line interface
+- Optional Streamlit web interface
+- Automated tests
 
 ## Run it
 
@@ -67,7 +51,7 @@ Generate a puzzle:
 python main.py --difficulty medium
 ```
 
-Start the web interface:
+Open the interactive interface:
 
 ```bash
 streamlit run app.py
@@ -79,48 +63,62 @@ Run tests:
 pytest -q
 ```
 
+## How the solver makes decisions
+
+A simple solver could always choose the first empty cell it finds.
+
+This project does something smarter.
+
+Suppose one empty cell can accept only `{7}`, while another can accept `{1, 3, 5, 7}`.
+
+The solver chooses the first cell because it has fewer possibilities. This reduces the number of unnecessary guesses.
+
+If a chosen number eventually causes a contradiction, the solver goes back, removes that choice and tries another one.
+
 ## Project structure
 
 ```text
-main.py                    → Main application
-utils/solver.py            → Sudoku solving logic
+main.py                    → Application entry point
+utils/solver.py            → Solving logic
 utils/board_generator.py   → Puzzle generation
 utils/key_generator.py     → Supporting puzzle utilities
-app.py                     → Web interface
+app.py                     → Streamlit interface
 tests/                     → Automated tests
 ```
 
-## Main technologies
+## Technical terms explained
 
-- **Python** — application logic
-- **NumPy** — works with the Sudoku board
-- **Streamlit** — optional web interface
-- **Backtracking** — searches for a valid solution
-- **MRV** — chooses the best cell to solve next
+**Algorithm** — A step-by-step method for solving a problem. The Sudoku solver follows a defined set of steps to find a valid solution.
 
-## Why this project is useful
+**Constraint** — A rule that must be followed. In Sudoku, a number cannot repeat in the same row, column or 3×3 box.
 
-Sudoku looks simple, but solving it efficiently is a good example of a **constraint-solving problem**: every choice has to follow several rules at the same time.
+**MRV (Minimum Remaining Values)** — A strategy that chooses the empty cell with the fewest legal choices. This often reduces the amount of searching required.
 
-This project demonstrates how a program can make decisions, detect when a decision is wrong, go back, and try another option.
+**Backtracking** — A search method where the program makes a choice, continues, and goes back to an earlier choice if the current path cannot produce a solution.
 
-## What I learned
+**Recursion** — When a function calls itself to solve a smaller version of the same problem. The Sudoku solver uses recursion while searching for a solution.
 
-The project demonstrates:
+**Candidate** — A number that is currently allowed in an empty Sudoku cell.
 
-- Algorithms
-- Recursion
-- Backtracking
-- Constraint solving
-- Heuristic search
-- Input validation
-- Testing
-- Building a small user-facing application
+**Validation** — Checking whether data follows the required rules. Here, it checks whether a Sudoku board or move is valid.
+
+**Streamlit** — A Python framework used to create the optional interactive web interface.
+
+**NumPy** — A Python library for working with numerical arrays. It is used by parts of the application.
+
+**Unit test** — A small automated check that verifies one part of a program behaves correctly.
+
+## What does this project demonstrate?
+
+The project combines a classic problem-solving algorithm with a user-facing application:
+
+**Puzzle generation → validation → intelligent search → backtracking → solution**
+
+It demonstrates **Python, algorithms, recursion, constraint solving, heuristic search, testing and application development**.
 
 ## Future improvements
 
-- Measure puzzle difficulty based on how much searching is required.
-- Detect puzzles with multiple solutions.
-- Show the solver's steps to the user.
-- Add solving statistics.
-- Improve the web interface.
+- Difficulty scoring based on how much solving effort is required
+- Detect puzzles with multiple solutions
+- Show solver steps and backtracking statistics
+- Improve the interface and puzzle statistics
